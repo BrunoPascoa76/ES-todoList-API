@@ -102,13 +102,6 @@ class SignOut(Resource):
         try:
             data=request.json
             access_token=data.get("access_token")
-            cognito.global_sign_out(AccessToken=access_token)
-            return "signed out successful",200
+            return auth.sign_out
         except KeyError:
             return "Wrong body",400
-        except cognito.exceptions.NotAuthorizedException:
-            return "Invalid access token",401
-        
-@api.route("/profile")
-class Profile(Resource):
-    @api.doc("get user info")

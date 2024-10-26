@@ -31,7 +31,7 @@ class AuthService():
         except self.cognito.exceptions.UsernameExistsException:
             return "Username already exists",409 
 
-    def confirm_sign_up(self,email,cofirmation_code):
+    def confirm_sign_up(self,email,confirmation_code):
         try:
             self.cognito.confirm_sign_up(
                 ClientId=current_app.config["AWS_COGNITO_USER_POOL_CLIENT_ID"],
@@ -45,7 +45,11 @@ class AuthService():
             return "Confirmation code expired",410
 
     def sign_out(self,access_token):
-        pass
+        try:
+            self.cognito.global_sign_out(AccessToken=access_token)
+            return "signed out successful",200
+        except self.cognito.exceptions.NotAuthorizedException:
+            return "Invalid access token",401
 
     def get_user_profile(self,access_token):
         pass
