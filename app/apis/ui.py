@@ -1,8 +1,6 @@
 from flask import make_response, redirect, render_template, request, url_for
 from flask_restx import Namespace, Resource
 
-from secret import AWS_COGNITO_HOSTED_URL
-
 
 api=Namespace("ui",description="UI-related endpoints")
 
