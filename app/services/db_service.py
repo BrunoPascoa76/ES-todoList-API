@@ -1,15 +1,20 @@
 from data.task import Task
-from data import Session,engine
+from data import engine
+from sqlalchemy.orm import Session
 
 def get_tasks_by_user_id(user_id):
-    with Session(engine) as session:
+    with Session(engine,expire_on_commit=False) as session:
         return session.query(Task).filter(Task.user_id==user_id).all()
 
 def get_task_by_id(id,user_id):
     pass
 
 def add_task(user_id,title,description=None,deadline=None,category="default",priority=0):
-    pass
+    with Session(engine,expire_on_commit=False) as session:
+        task=Task(user_id=user_id,title=title,description=description,deadline=deadline,category=category,priority=priority)
+        session.add(task)
+        session.commit()
+        return task
 
 def mark_as_completed(user_id,task_id):
     pass
