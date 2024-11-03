@@ -1,6 +1,5 @@
-from sqlalchemy import Column, DateTime, Integer, String, Text, Enum, ForeignKey, func
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, Enum, ForeignKey, func
 from sqlalchemy.orm import relationship,declarative_base
-from . import Base
 
 Base = declarative_base()
 
@@ -11,10 +10,10 @@ class Task(Base):
     user_id=Column(String,nullable=False)
     title=Column(String,nullable=False)
     description=Column(String)
-    priority=Column(Integer,server_default=0)
+    priority=Column(Integer,default=0)
     deadline=Column(DateTime)
-    is_completed=Column(bool,server_default=False)
-    category=Column(String,server_default="default")
+    is_completed=Column(Boolean,default=False)
+    category=Column(String,default="default")
     created_date = Column(DateTime, server_default=func.now())
 
     def as_dict(self):
