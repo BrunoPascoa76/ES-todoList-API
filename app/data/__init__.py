@@ -1,8 +1,8 @@
 from secret import DATABASE_URL
-from sqlalchemy.orm import declarative_base,sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-Base = declarative_base()
+from .task import Base,Task
 
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(engine)
