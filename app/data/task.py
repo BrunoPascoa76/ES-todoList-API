@@ -10,11 +10,11 @@ class Task(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     userId=Column(String,nullable=False)
     title=Column(String,nullable=False)
-    priority=Column(Integer,server_default=0)
     description=Column(String)
-    deadline=Column(DateTime,server_default="default")
+    priority=Column(Integer,server_default=0)
+    deadline=Column(DateTime)
     is_completed=Column(bool,server_default=False)
-    category=Column(String)
+    category=Column(String,server_default="default")
     created_date = Column(DateTime, server_default=func.now())
 
     def as_dict(self):
