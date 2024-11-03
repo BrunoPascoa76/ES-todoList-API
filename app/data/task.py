@@ -8,7 +8,7 @@ class Task(Base):
     __tablename__ = 'task'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    userId=Column(String,nullable=False)
+    user_id=Column(String,nullable=False)
     title=Column(String,nullable=False)
     description=Column(String)
     priority=Column(Integer,server_default=0)

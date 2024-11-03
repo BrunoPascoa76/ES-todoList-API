@@ -1,5 +1,9 @@
+from data.task import Task
+from data import Session,engine
+
 def get_tasks_by_user_id(user_id):
-    pass
+    with Session(engine) as session:
+        return session.query(Task).filter(Task.user_id==user_id).all()
 
 def get_task_by_id(id,user_id):
     pass

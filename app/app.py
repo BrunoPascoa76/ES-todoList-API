@@ -4,7 +4,7 @@ from flask import Flask,jsonify, redirect, request, session
 from flask_restx import Api
 
 from apis import blueprint,api
-from app.secret import FLASK_SECRET_KEY
+from secret import FLASK_SECRET_KEY
 
 def create_app():
     app = Flask(__name__)
