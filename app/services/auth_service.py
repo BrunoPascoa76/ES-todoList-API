@@ -1,55 +1,36 @@
+import base64
 import os
+import sys
 import boto3
-from flask import current_app
+import requests
+
+from secret import API_URL, AWS_COGNITO_USER_POOL_CLIENT_ID, AWS_COGNITO_USER_POOL_CLIENT_SECRET, AWS_REGION, TOKEN_URL
 
 
-class AuthService():
-    def __init__(self):
-        self.cognito=boto3.client('cognito-idp',os.environ["AWS_REGION"])
+cognito=boto3.client('cognito-idp',AWS_REGION)
 
-    def login(self,email,password):
-        try:
-            return self.cognito.initiate_auth(
-                    AuthFlow="USER_PASSWORD_AUTH",
-                    AuthParameters={
-                        "USERNAME":email,
-                        "PASSWORD":password
-                    },
-                    ClientId=current_app.config["AWS_COGNITO_USER_POOL_CLIENT_ID"]
-                ),200
-        except self.cognito.exceptions.NotAuthorizedException:
-            return 401
+#lazy create: the user is added to the database the first time it is needed
+def get_user(authorization_token):
+    try:
+        return cognito.get_user(AccessToken=authorization_token)
+    except cognito.exceptions.NotAuthorizedException:
+        return None
 
-    def sign_up(self,email,password):
-        try:
-            self.cognito.sign_up(
-                ClientId=current_app.config["AWS_COGNITO_USER_POOL_CLIENT_ID"],
-                Username=email,
-                Password=password,
-            )
-            return "User created. Confirm registration via email",200
-        except self.cognito.exceptions.UsernameExistsException:
-            return "Username already exists",409 
-
-    def confirm_sign_up(self,email,confirmation_code):
-        try:
-            self.cognito.confirm_sign_up(
-                ClientId=current_app.config["AWS_COGNITO_USER_POOL_CLIENT_ID"],
-                Username=email,
-                ConfirmationCode=confirmation_code
-            )
-            return "user confirmed",200
-        except self.cognito.exceptions.CodeMismatchException:
-            return "Wrong confirmation code",400
-        except self.cognito.exceptions.ExpiredCodeException:
-            return "Confirmation code expired",410
-
-    def sign_out(self,access_token):
-        try:
-            self.cognito.global_sign_out(AccessToken=access_token)
-            return "signed out successful",200
-        except self.cognito.exceptions.NotAuthorizedException:
-            return "Invalid access token",401
-
-    def get_user_profile(self,access_token):
-        pass
+def exchange_token(authorization_code):
+    message = bytes(f"{AWS_COGNITO_USER_POOL_CLIENT_ID}:{AWS_COGNITO_USER_POOL_CLIENT_SECRET}",'utf-8')
+    secret_hash = base64.b64encode(message).decode()
+    payload = {
+        "grant_type": 'authorization_code',
+        "client_id": AWS_COGNITO_USER_POOL_CLIENT_ID,
+        "code": authorization_code,
+        "redirect_uri": f"{API_URL}/api/v1/auth/redirect"
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": f"Basic {secret_hash}"}
+           
+    response = requests.post(TOKEN_URL, params=payload, headers=headers)
+    if response.status_code==200:
+        tokens = response.json()
+        return tokens.get("access_token")
+    else:
+        return None

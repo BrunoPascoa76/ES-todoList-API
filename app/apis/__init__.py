@@ -3,8 +3,10 @@ from flask_restx import Api
 
 blueprint = Blueprint('apis', __name__)
 
-api = Api(version="1.0",title="TopTable Customer API",description="TopTable API for the customer side",prefix="/api/v1")
+api = Api(version="1.0",title="Todo List",description="TodoList for the individual project",prefix="/")
 
 from .auth import api as api_auth
+from .ui import api as api_ui
 
 api.add_namespace(api_auth)
+api.add_namespace(api_ui)
