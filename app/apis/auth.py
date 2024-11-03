@@ -20,7 +20,7 @@ class Login(Resource):
 class SignOut(Resource):
     @api.doc("sign out")
     @api.response(301,"redirecting to home page")
-    def post(self):
+    def get(self):
         resp=redirect("/ui/")
         resp.delete_cookie("access_token")
         return resp
