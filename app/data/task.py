@@ -9,7 +9,10 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     userId=Column(String,nullable=False)
-    deadline=Column(DateTime)
+    title=Column(String,nullable=False)
+    priority=Column(Integer,server_default=0)
+    description=Column(String)
+    deadline=Column(DateTime,server_default="default")
     is_completed=Column(bool,server_default=False)
     category=Column(String)
     created_date = Column(DateTime, server_default=func.now())
