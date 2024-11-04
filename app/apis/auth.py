@@ -46,13 +46,13 @@ class Redirect(Resource):
 @api.route("/get_current_user") #this route can be used for testing
 class GetCurrentUser(Resource):
     def get(self):
-        if 'x-amzn-oidc-data' in request.headers:
-            id_token = request.headers.get('x-amzn-oidc-data')
-            decoded_id_token = jwt.decode(id_token, options={"verify_signature": True})
-            return jsonify({"user_info": json.dumps(decoded_id_token)})
-
-        if "access_token" not in request.cookies:
-            return redirect("/api/v1/auth/login")
-        else:
+        if 'x-amzn-oidc-accesstoken' in request.headers:
+            access_token = request.headers.get('x-amzn-oidc-accesstoken')         
+        elif "access_token" in request.cookies:
             access_token=request.cookies.get("access_token")
-            return get_user(access_token)
+        else:
+            return redirect("/api/v1/auth/login")
+
+        return get_user(access_token)
+
+            

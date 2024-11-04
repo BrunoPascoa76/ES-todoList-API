@@ -1,4 +1,4 @@
-from flask import redirect, request
+from flask import redirect, request,url_for
 from flask_restx import Namespace, Resource,fields
 
 from services.db_service import add_task, get_tasks_by_user_id
@@ -18,23 +18,26 @@ task_model=api.model("task",{
     "created_date":fields.DateTime
 })
 
-@api.route("/")
+@api.route("/",endpoint="tasks")
 class Tasks(Resource):
     @api.doc("list all of the user's tasks")
     @api.response(200,"returns a list of tasks",fields.List(fields.Nested(task_model)))
     @api.response(401,"not authorized")
     def get(self):
-        if "access_token" in request.cookies:
-            token=request.cookies.get("access_token")
-            user=get_user(token)
-            if user is None or "Username" not in user:
-                return "not authorized",401
-            else:
-                user_id=user["Username"]
-                tasks=get_tasks_by_user_id(user_id)
-                return [task.as_dict() for task in tasks],200
+        if 'x-amzn-oidc-accesstoken' in request.headers:
+            access_token = request.headers.get('x-amzn-oidc-accesstoken')
+        elif "access_token" in request.cookies:
+            access_token=request.cookies.get("access_token")
         else:
             return "not authorized",401
+
+        user=get_user(access_token)
+        if user is None or "Username" not in user:
+            return "not authorized",401
+        else:
+            user_id=user["Username"]
+            tasks=get_tasks_by_user_id(user_id)
+            return [task.as_dict() for task in tasks],200
 
     @api.doc("add a new task")
     @api.expect({
@@ -48,11 +51,15 @@ class Tasks(Resource):
     @api.response(400,"wrong body")
     @api.response(401,"not authorized")
     def post(self):
-        if "access_token" not in request.cookies:
-            return "not authorized",400
-        
-        token=request.cookies.get("access_token")
-        user=get_user(token)
+        if 'x-amzn-oidc-accesstoken' in request.headers:
+            access_token = request.headers.get('x-amzn-oidc-accesstoken')
+        elif "access_token" in request.cookies:
+            access_token=request.cookies.get("access_token")
+        else:
+            return "not authorized",401
+            
+
+        user=get_user(access_token)
         if user is None or "Username" not in user:
             return "not authorized",400   
         user_id=user["Username"]
@@ -75,6 +82,7 @@ class Tasks(Resource):
 
         result=add_task(user_id=user_id,title=title,description=description,deadline=deadline,category=category,priority=priority).as_dict()
         if from_form:
-            return redirect("/ui")
+            return redirect(url_for("get tasks"))
         else:
             return result,200
+        
