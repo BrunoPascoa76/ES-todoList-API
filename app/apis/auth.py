@@ -1,10 +1,11 @@
 import os
 from urllib import response
 import boto3
-from flask import jsonify, redirect, request, url_for
+from flask import json, jsonify, redirect, request, url_for
 from flask_restx import Namespace,Resource,fields
 from services.auth_service import exchange_token, get_user
 from secret import AWS_COGNITO_HOSTED_URL,API_URL, AWS_COGNITO_USER_POOL_CLIENT_ID, AWS_REGION
+import jwt
 
 api=Namespace("auth",path="/api/v1/auth",description="Authentication operations")
 
@@ -45,6 +46,11 @@ class Redirect(Resource):
 @api.route("/get_current_user") #this route can be used for testing
 class GetCurrentUser(Resource):
     def get(self):
+        if 'X-Amzn-OIDC-IDToken' in request.headers:
+            id_token = request.headers.get('X-Amzn-OIDC-IDToken')
+            decoded_id_token = jwt.decode(id_token, options={"verify_signature": True})
+            return jsonify({"user_info": json.dumps(decoded_id_token)})
+
         if "access_token" not in request.cookies:
             return redirect("/api/v1/auth/login")
         else:
