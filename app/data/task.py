@@ -18,7 +18,7 @@ class Task(Base):
 
     def as_dict(self):
         result = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        for key in ['deadline']:
+        for key in ['deadline',"created_date"]:
             if key in result and result[key] is not None:
                 result[key] = result[key].isoformat()
         return result

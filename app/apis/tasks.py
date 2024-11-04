@@ -1,4 +1,4 @@
-from flask import request
+from flask import redirect, request
 from flask_restx import Namespace, Resource,fields
 
 from services.db_service import add_task, get_tasks_by_user_id
@@ -44,7 +44,7 @@ class Tasks(Resource):
         "category":fields.String(required=False),
         "priority":fields.Integer(required=False)
     })
-    @api.response(200,"returns the created task",model=task_model)
+    @api.response(200,"returns the created task (redirects to home if from form)",model=task_model)
     @api.response(400,"wrong body")
     @api.response(401,"not authorized")
     def post(self):
@@ -56,8 +56,14 @@ class Tasks(Resource):
         if user is None or "Username" not in user:
             return "not authorized",400   
         user_id=user["Username"]
+        
+        if request.form and "title" in request.form:  #they used a form
+            from_form=True
+            data=request.form
+        else:
+            data=request.json
+            from_form=False
 
-        data=request.json
         if "title" not in data:
             return "wrong body",400
         title=data["title"]
@@ -67,4 +73,8 @@ class Tasks(Resource):
         category=data.get("category","default")
         priority=data.get("priority",0)
 
-        return add_task(title=title,description=description,deadline=deadline,category=category,priority=priority).as_dict(),200
+        result=add_task(user_id=user_id,title=title,description=description,deadline=deadline,category=category,priority=priority).as_dict()
+        if from_form:
+            return redirect("/ui")
+        else:
+            return result,200
