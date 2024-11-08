@@ -23,12 +23,17 @@
       </div>
     </div>
     <div class="container d-flex flex-row my-2 justify-content-end">
+      
       <form class="d-flex" action="/ui" method="GET">
-        <select class="form-select" name="sort_by" onchange="this.form.submit()" value="title">
-          {% for option in ["default","title","description","priority","deadline","category","is_completed","created_date"] %}
-          <option value="{{ option }}" {% if option == sort_by %}selected{% endif %}>{{ option }}</option>
-          {% endfor %}
-        </select>
+        <div class="form-group p-2 row">
+          <label class="p-2 col">Sort by:</label>
+          <select class="form-select col" name="sort_by" onchange="this.form.submit()" value="title">
+            {% for option in ["default","title","description","priority","deadline","category","is_completed","created_date"] %}
+            <option value="{{ option }}" {% if option == sort_by %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
       </form>
     </div>
     <div class="container">
