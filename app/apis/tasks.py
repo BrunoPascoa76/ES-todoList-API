@@ -22,7 +22,9 @@ task_model=api.model("task",{
 @api.route("/",endpoint="tasks")
 class Tasks(Resource):
     @api.doc("list all of the user's tasks")
+    @api.param("sort_by",fields.String(enum=["title","description","priority","deadline","category","is_completed","created_date"]),required=False)
     @api.response(200,"returns a list of tasks",fields.List(fields.Nested(task_model)))
+    @api.response(400,"wrong filter/sort")
     @api.response(401,"not authorized")
     def get(self):
         if 'x-amzn-oidc-accesstoken' in request.headers:
@@ -38,6 +40,10 @@ class Tasks(Resource):
         else:
             user_id=user["Username"]
             tasks=get_tasks_by_user_id(user_id)
+            if "sort_by" in request.args and request.args["sort_by"] is not None and request.args["sort_by"]!="default":
+                if request.args["sort_by"] not in ["title","description","priority","deadline","category","is_completed","created_date"]:
+                    return "wrong filter/sort",400
+                tasks=sorted(tasks,key=lambda task: getattr(task,request.args["sort_by"]))
             return [task.as_dict() for task in tasks],200
 
     @api.doc("add a new task")
@@ -154,8 +160,10 @@ class Task(Resource):
             
         if request.form:
             data=request.form
+            from_form=True
         else:
             data=request.json
+            from_form=False
 
         title=None
         description=None
@@ -183,7 +191,10 @@ class Task(Resource):
         elif code==401:
             return "not authorized",401
         else:
-            return task.as_dict(),200
+            if from_form:
+                return redirect(url_for("get tasks"))
+            else:
+                return task.as_dict(),200
 
 @api.route("/<int:task_id>/delete",endpoint="delete task")
 class DeleteTask(Resource):
@@ -211,7 +222,7 @@ class DeleteTask(Resource):
         elif code==401:
             return "not authorized",401
         else:
-            return "task deleted",200
+            return redirect(url_for("get tasks"))
         
 @api.route("/<int:task_id>/togle_complete",endpoint="toggle completion")
 class ToggleCompletion(Resource):
@@ -240,4 +251,4 @@ class ToggleCompletion(Resource):
         elif code==401:
             return "not authorized",401
         else:
-            return "task toggled",200
+            return redirect(url_for("get tasks"))

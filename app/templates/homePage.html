@@ -22,6 +22,15 @@
         <div class="p-2"><a href="/ui/addTask" class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="Add new task"><i class="fa fa-plus"></i></a></div>
       </div>
     </div>
+    <div class="container d-flex flex-row my-2 justify-content-end">
+      <form class="d-flex" action="/ui" method="GET">
+        <select class="form-select" name="sort_by" onchange="this.form.submit()" value="title">
+          {% for option in ["default","title","description","priority","deadline","category","is_completed","created_date"] %}
+          <option value="{{ option }}" {% if option == sort_by %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
     <div class="container">
       <table class="table">
         <thead>
@@ -36,11 +45,26 @@
         <tbody>
           {% for task in tasks %}
           <tr>
-            <td><a class="text" href="/ui/task/{{ task.id }}" style="color: inherit; text-decoration: none;">{{ task.title }}</a></td>
-            <td>
-              {{ task.priority }}
-            </td>
-            <td>
+            <td 
+              style="background-color: #ffffff; cursor: pointer;"
+              onmouseover="this.style.backgroundColor='#D3D3D3'"
+              onmouseout="this.style.backgroundColor='#ffffff'"
+              onclick="window.location.href='/ui/task/{{ task.id }}';"
+            >{{ task.title }}</td>
+            
+            <td 
+              style="background-color: #ffffff; cursor: pointer;"
+              onmouseover="this.style.backgroundColor='#D3D3D3'"
+              onmouseout="this.style.backgroundColor='#ffffff'"
+              onclick="window.location.href='/ui/task/{{ task.id }}';"
+            >{{ task.priority }}</td>
+            
+            <td 
+            style="background-color: #ffffff; cursor: pointer;"
+            onmouseover="this.style.backgroundColor='#D3D3D3'"
+            onmouseout="this.style.backgroundColor='#ffffff'"
+            onclick="window.location.href='/ui/task/{{ task.id }}';"
+            >
               {% if task.deadline is not none %} {{ task.deadline }} {% endif %}
             </td>
             <td>

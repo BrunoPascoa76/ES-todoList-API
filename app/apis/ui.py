@@ -21,7 +21,13 @@ class HomePage(Resource):
         if user is None:
             return redirect(url_for("auth_login"))
         tasks=get_tasks_by_user_id(user["Username"])
-        return make_response(render_template("homePage.html",tasks=tasks),200,{"Content-type":"text/html"})
+
+        if "sort_by" in request.args and request.args["sort_by"] is not None and request.args["sort_by"]!="default":
+            if request.args["sort_by"] not in ["title","description","priority","deadline","category","is_completed","created_date"]:
+                return "wrong filter/sort",400
+            tasks=sorted(tasks,key=lambda task: getattr(task,request.args["sort_by"]))
+
+        return make_response(render_template("homePage.html",tasks=tasks,sort_by=request.args.get("sort_by","default")),200,{"Content-type":"text/html"})
         
 @api.route("/addTask",endpoint="add task")
 class AddTask(Resource):
