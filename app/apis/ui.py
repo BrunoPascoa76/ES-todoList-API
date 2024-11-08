@@ -48,5 +48,5 @@ class GetTask(Resource):
             return redirect(url_for("auth_login"))
 
         user=get_user(access_token)
-        task=get_task_by_id(task_id,user["Username"])
+        task,_=get_task_by_id(task_id,user["Username"])
         return make_response(render_template("task.html",task=task),200,{"Content-type":"text/html"})
