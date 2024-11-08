@@ -26,9 +26,9 @@
       
       <form class="d-flex" action="/ui" method="GET">
         <div class="form-group p-2 row">
-          <label class="p-2 col">Sort by:</label>
-          <select class="form-select col" name="sort_by" onchange="this.form.submit()" value="title">
-            {% for option in ["default","title","description","priority","deadline","category","is_completed","created_date"] %}
+          <label class="p-2 col" for="sort_by">Sort by:</label>
+          <select class="form-select col" name="sort_by" id="sort_by" onchange="this.form.submit()" value="title">
+            {% for option in ["default","title","priority","deadline","category","is_completed"] %}
             <option value="{{ option }}" {% if option == sort_by %}selected{% endif %}>{{ option }}</option>
             {% endfor %}
           </select>
@@ -42,6 +42,7 @@
           <tr>
             <th class="col-9">Title</th>
             <th class="col">Priority</th>
+            <th class="col">Category</th>
             <th class="col">Deadline</th>
             <th class="col">Completed?</th>
             <th class="col"></th>
@@ -63,14 +64,21 @@
               onmouseout="this.style.backgroundColor='#ffffff'"
               onclick="window.location.href='/ui/task/{{ task.id }}';"
             >{{ task.priority }}</td>
-            
             <td 
             style="background-color: #ffffff; cursor: pointer;"
             onmouseover="this.style.backgroundColor='#D3D3D3'"
             onmouseout="this.style.backgroundColor='#ffffff'"
             onclick="window.location.href='/ui/task/{{ task.id }}';"
             >
-              {% if task.deadline is not none %} {{ task.deadline }} {% endif %}
+              {% if task.category is not none %} {{ task.category }} {% endif %}
+            </td>
+            <td 
+            style="background-color: #ffffff; cursor: pointer;"
+            onmouseover="this.style.backgroundColor='#D3D3D3'"
+            onmouseout="this.style.backgroundColor='#ffffff'"
+            onclick="window.location.href='/ui/task/{{ task.id }}';"
+            >
+              {% if task.deadline is not none %} {{ task.deadline.strftime('%d/%m %H:%M') }} {% endif %}
             </td>
             <td>
               <form action="{{ url_for('toggle completion', task_id=task.id) }}" method="POST">
