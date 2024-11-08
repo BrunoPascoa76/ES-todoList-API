@@ -24,30 +24,30 @@
     </div>    
     <form method="POST" action="{{ url_for('tasks') }}">
         <div class="container">
-            <div class="row form-group">
-                <label for="title">Title: *</label>
-                <input type="text" class="form-control" id="title" name="title" placeholder="insert title" required>
+            <div class="d-flex flex-row form-group gap-5">
+                <label for="title" class="p-2 form-label">Title: *</label>
+                <input type="text" class="col form-control" id="title" name="title" placeholder="insert title" required>
             </div>
-            <div class="row form-group mt-2">
-                <label for="description">Description:</label>
-                <input type="text" class="form-control" id="description" name="description" placeholder="insert description">
+            <div class="d-flex flex-row form-group mt-2 gap-2">
+                <label for="description" class="p-2 form-label">Description:</label>
+                <input type="text" class="col form-control" id="description" name="description" placeholder="insert description">
             </div>
-            <div class="row mt-2">
-                <div class="col form-check">
+            <div class="d-flex flex-row mt-2 gap-3">
+                <div class="p-2 flex-col form-check">
                     <label for="deadline">Deadline:</label>
-                    <input type="date" class="form-control" id="deadline" name="deadline">
+                    <input type="date" class="p-2 form-control" id="deadline" name="deadline">
                 </div>
-                <div class="col form-group">
+                <div class="p-2 flex-col form-group">
                     <label for="category">Category:</label>
-                    <input type="text" id="category" name="category" class="form-control">
+                    <input type="text" id="category" name="category" class="p-2 form-control" placeholder="insert category">
                 </div>
-                <div class="col form-check">
+                <div class="p-2 flex-col form-check">
                     <label for="priority">Priority:</label>
-                    <input type="number" id="priority" name="priority" class="form-control">
+                    <input type="number" id="priority" name="priority" class="p-2 form-control" placeholder="insert priority">
                 </div>
             </div>
-            <div class="row mt-2">
-             <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="p-2 d-flex flex-row mt-2 justify-content-center">
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
     </form>
