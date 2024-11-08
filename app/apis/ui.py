@@ -1,7 +1,7 @@
 from flask import make_response, redirect, render_template, request, url_for
 from flask_restx import Namespace, Resource
 
-from services.db_service import get_tasks_by_user_id
+from services.db_service import get_task_by_id, get_tasks_by_user_id
 from services.auth_service import get_user
 
 
@@ -36,3 +36,17 @@ class AddTask(Resource):
         user=get_user(access_token)
         tasks=get_tasks_by_user_id(user["Username"])
         return make_response(render_template("addTask.html",tasks=tasks),200,{"Content-type":"text/html"})
+
+@api.route("/task/<int:task_id>",endpoint="get task")
+class GetTask(Resource):
+    def get(self,task_id):    
+        if 'x-amzn-oidc-accesstoken' in request.headers:
+            access_token = request.headers.get('x-amzn-oidc-accesstoken')
+        elif "access_token" in request.cookies:
+            access_token=request.cookies.get("access_token")
+        else:
+            return redirect(url_for("auth_login"))
+
+        user=get_user(access_token)
+        task,_=get_task_by_id(task_id,user["Username"])
+        return make_response(render_template("task.html",task=task),200,{"Content-type":"text/html"})

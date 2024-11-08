@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import text
 
-from services.db_service import add_task, get_tasks_by_user_id
+from services.db_service import add_task, delete_task, get_tasks_by_user_id, toggle_completed, update_task
 from data.task import Task
 from data.task import Base
 from data import engine
@@ -33,8 +33,6 @@ def setup():
 def test_add_task():
     global example_tasks
 
-    
-
     with Session(engine,expire_on_commit=False) as session:
         assert(session.query(Task).filter(Task.user_id=="test_2").count()==0)
 
@@ -56,3 +54,33 @@ def test_get_all_task():
 
     assert(results[0].user_id==example_tasks[0].user_id)
 
+def test_delete_task():
+    global example_tasks
+
+    result=delete_task(example_tasks[0].id,"test_1")
+
+    assert(result==200)
+
+    with Session(engine,expire_on_commit=False) as session:
+        assert(session.query(Task).filter(Task.user_id=="test_1").count()==0)
+
+def test_toggle_completed():
+    global example_tasks
+
+    with Session(engine,expire_on_commit=False) as session:
+        task_id=session.query(Task).filter(Task.user_id=="test_2").first().id
+        result=toggle_completed(task_id,"test_2")
+
+    assert(result==200)
+
+    with Session(engine,expire_on_commit=False) as session:
+        assert(session.query(Task).filter(Task.user_id=="test_2",Task.is_completed==True).count()==1)
+
+def test_update_task():
+    global example_tasks
+
+    with Session(engine,expire_on_commit=False) as session:
+        task_id=session.query(Task).filter(Task.user_id=="test_2").first().id
+
+        result=update_task(task_id,"test_2","new title")
+        assert(result[0].title=="new title")
