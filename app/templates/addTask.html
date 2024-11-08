@@ -16,10 +16,12 @@
           </form>
         </div>
     </nav>
-    <a class="btn btn-light btn-lg" style="border: none; background: transparent;" href="/ui">
-        <i class="fa fa-arrow-left" style="font-size: 2rem;"></i>
-    </a>
-    <h1>Create new task:</h1>
+    <div class="d-flex flex-row justify-content-start">
+        <a class="p-2 btn btn-light btn-lg" style="border: none; background: transparent;" href="/ui">
+            <i class="fa fa-arrow-left" style="font-size: 2rem;"></i>
+        </a>
+        <h1 class="p-2">Create new task:</h1>
+    </div>    
     <form method="POST" action="{{ url_for('tasks') }}">
         <div class="container">
             <div class="row form-group">
