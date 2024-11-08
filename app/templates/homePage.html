@@ -30,11 +30,12 @@
             <th class="col">Priority</th>
             <th class="col">Deadline</th>
             <th class="col">Completed?</th>
+            <th class="col"></th>
           </tr>
         </thead>
         <tbody>
           {% for task in tasks %}
-          <tr>
+          <tr onclick="redirectToDetails('{{ task.id }}')">
             <td>
               {{ task.title }}
             </td>
@@ -51,6 +52,7 @@
                 onchange="handleTaskCompletionChange('{{ task.id }}',this.checked)"
                 {% if task.is_completed %}checked{% endif %}>
             </td>
+            <td><button class="btn btn-danger" onclick="handleTaskDeletion('{{ task.id }}')"><i class="fa fa-trash"></i></button></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -58,5 +60,23 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      function handleTaskCompletionChange(task_id, is_completed) {
+        fetch("/api/tasks/"+task_id+"/set_completed", {
+          method: "POST"}
+        )
+      }
+
+      function handleTaskDeletion(task_id) {
+        fetch("/api/tasks/"+task_id, {
+          method: "DELETE"}
+        )
+        window.location.reload()
+      }
+
+      function redirectToDetails(task_id) {
+        window.location.href = "/ui/tasks/"+task_id
+      }
+    </script>
   </body>
 </html>
