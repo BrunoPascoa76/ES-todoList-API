@@ -25,9 +25,16 @@ class HomePage(Resource):
         if "sort_by" in request.args and request.args["sort_by"] is not None and request.args["sort_by"]!="default":
             if request.args["sort_by"] not in ["title","description","priority","deadline","category","is_completed","created_date"]:
                 return "wrong filter/sort",400
-            tasks=sorted(tasks,key=lambda task: getattr(task,request.args["sort_by"]))
+            tasks=sorted(tasks,key=lambda task: getattr(task,request.args["sort_by"]),reverse=request.args.get("order","asc")=="desc")
 
-        return make_response(render_template("homePage.html",tasks=tasks,sort_by=request.args.get("sort_by","default")),200,{"Content-type":"text/html"})
+        if "category" in request.args and request.args["category"] is not None and request.args["category"]!="":
+            tasks=[task for task in tasks if request.args["category"] in task.category]
+
+        if "filter_is_completed" in request.args and len(request.args.getlist("filter_is_completed"))==1:
+            is_completed_filter=request.args.getlist("filter_is_completed")[0]=="Completed"
+            tasks=[task for task in tasks if task.is_completed==is_completed_filter]
+
+        return make_response(render_template("homePage.html",tasks=tasks,sort_by=request.args.get("sort_by","default"),sort_order=request.args.get("order","desc"),category=request.args.get("category",""),order=request.args.get("order","desc"),filter_is_completed=request.args.getlist("filter_is_completed")),200,{"Content-type":"text/html"})
         
 @api.route("/addTask",endpoint="add task")
 class AddTask(Resource):
