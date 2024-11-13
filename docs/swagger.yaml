@@ -1,0 +1,216 @@
+swagger: '2.0'
+basePath: /
+paths:
+  /api/v1/auth/get_current_user:
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_get_current_user
+      tags:
+        - auth
+  /api/v1/auth/login:
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: login via hosted ui
+      tags:
+        - auth
+  /api/v1/auth/redirect:
+    get:
+      responses:
+        '301':
+          description: redirect to home page
+        '400':
+          description: code not returned
+        '500':
+          description: error enchanging code
+      operationId: get_redirect
+      tags:
+        - auth
+  /api/v1/auth/sign_out:
+    get:
+      responses:
+        '301':
+          description: redirecting to home page
+      operationId: sign out
+      tags:
+        - auth
+  /api/v1/tasks/:
+    post:
+      responses:
+        '200':
+          description: returns the created task (redirects to home if from form)
+          schema:
+            $ref: '#/definitions/task'
+        '400':
+          description: wrong body
+        '401':
+          description: not authorized
+      operationId: add a new task
+      tags:
+        - tasks
+    get:
+      responses:
+        '200':
+          description: returns a list of tasks
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/task'
+        '400':
+          description: wrong filter/sort
+        '401':
+          description: not authorized
+      operationId: list all of the user's tasks
+      parameters:
+        - enum:
+            - title
+            - description
+            - priority
+            - deadline
+            - category
+            - is_completed
+            - created_date
+          required: false
+          in: query
+          name: sort_by
+          type: string
+      tags:
+        - tasks
+  /api/v1/tasks/{task_id}:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        type: integer
+    post:
+      responses:
+        '200':
+          description: task updated
+        '401':
+          description: not authorized
+        '404':
+          description: task not found
+      operationId: update a task
+      tags:
+        - tasks
+    get:
+      responses:
+        '200':
+          description: returns the task
+          schema:
+            $ref: '#/definitions/task'
+        '401':
+          description: not authorized
+        '404':
+          description: task not found
+      operationId: get a task
+      tags:
+        - tasks
+  /api/v1/tasks/{task_id}/delete:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        type: integer
+    post:
+      responses:
+        '200':
+          description: task deleted
+        '401':
+          description: not authorized
+        '404':
+          description: task not found
+      operationId: delete a task
+      tags:
+        - tasks
+  /api/v1/tasks/{task_id}/togle_complete:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        type: integer
+    post:
+      responses:
+        '200':
+          description: task toggled
+        '401':
+          description: not authorized
+        '404':
+          description: task not found
+      operationId: toggle completion
+      tags:
+        - tasks
+  /ui/:
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_home_page
+      tags:
+        - ui
+  /ui/addTask:
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_add_task
+      tags:
+        - ui
+  /ui/task/{task_id}:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        type: integer
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_get_task
+      tags:
+        - ui
+info:
+  title: Todo List
+  version: '1.0'
+  description: TodoList for the individual project
+produces:
+  - application/json
+consumes:
+  - application/json
+tags:
+  - name: auth
+    description: Authentication operations
+  - name: ui
+    description: UI-related endpoints
+  - name: tasks
+    description: Task management operations
+definitions:
+  task:
+    properties:
+      id:
+        type: integer
+      userId:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      deadline:
+        type: string
+        format: date-time
+      is_completed:
+        type: boolean
+      category:
+        type: string
+      created_date:
+        type: string
+        format: date-time
+    type: object
+responses:
+  ParseError:
+    description: When a mask can't be parsed
+  MaskError:
+    description: When any error occurs on mask
