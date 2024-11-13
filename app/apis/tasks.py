@@ -22,7 +22,7 @@ task_model=api.model("task",{
 @api.route("/",endpoint="tasks")
 class Tasks(Resource):
     @api.doc("list all of the user's tasks")
-    @api.param("sort_by",fields.String(enum=["title","description","priority","deadline","category","is_completed","created_date"]),required=False)
+    @api.param("sort_by",enum=["title","description","priority","deadline","category","is_completed","created_date"],required=False)
     @api.response(200,"returns a list of tasks",fields.List(fields.Nested(task_model)))
     @api.response(400,"wrong filter/sort")
     @api.response(401,"not authorized")
