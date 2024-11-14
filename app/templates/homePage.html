@@ -85,7 +85,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form class="d-flex flex-column" action="/ui" method="GET" id="filterForm">
+          <form class="d-flex flex-column" action="url_for('get tasks')" method="GET" id="filterForm">
             <div class="form-group p-2 row">
               <label class="p-2 col" for="sort_by">Sort by:</label>
               <select class="form-select p-2 col" name="sort_by" id="sort_by" value="title">
